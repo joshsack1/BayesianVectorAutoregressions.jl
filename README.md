@@ -69,7 +69,7 @@ end_vars = [:gdp, :cpi, :ffr]
 
 # Stage 1: unit-root and cointegration testing
 adf_res = adf_tests(df, end_vars)
-trace_stats, eigenvals = johansen_trace_test(df, end_vars, 2)
+jres = johansen_trace_test(df, end_vars, 2)   # prints the trace / λ-max table
 
 # Stage 2: lag selection. Note that these two helpers are not exported.
 Y = BayesianVectorAutoregressions.get_endogenous(df, end_vars)

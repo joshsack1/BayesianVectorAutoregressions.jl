@@ -27,7 +27,7 @@ include("bayesian-estimation/bayesian-estimation.jl")
 # Include Structural Identification and Impulse Response Functions
 include("structural-identification/structural-identification.jl")
 
-export adf_tests, johansen_trace_test
+export adf_tests, johansen_trace_test, JohansenResult
 
 export aic, bic, hq, fpe
 
