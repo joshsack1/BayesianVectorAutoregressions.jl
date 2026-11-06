@@ -44,7 +44,7 @@ using Pkg
 Pkg.add("BayesianVectorAutoregressions")
 ```
 
-Julia 1.12 or later is required.
+Julia 1.13 or later is required.
 
 ---
 
