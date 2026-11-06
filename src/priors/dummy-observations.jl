@@ -8,18 +8,33 @@
     dummy_minnesota(Y::AbstractMatrix, lags::Int, include_constant::Bool; λ1 = 0.2, λ3 = 1.0)
 
 Bańbura, Giannone & Reichlin (2010) dummy-observation implementation of the
-Minnesota prior. One dummy row is added per (lag, variable) pair,
+Minnesota prior. The first block has one dummy row per (lag, variable) pair,
 
-``y^{*}_{(\\ell,j)i} = \\begin{cases}\\hat\\sigma_j \\ell^{\\lambda_3}/\\lambda_1 & i=j \\\\ 0 & i \\neq j\\end{cases},
-\\qquad x^{*}_{(\\ell,j)} \\text{ places } \\hat\\sigma_j \\ell^{\\lambda_3}/\\lambda_1 \\text{ on regressor } (\\ell,j) \\text{ and } 0 \\text{ elsewhere},``
+``y^{*}_{(\\ell,j)i} = \\begin{cases}\\hat\\sigma_j/\\lambda_1 & i=j,\\ \\ell=1 \\\\ 0 & \\text{otherwise}\\end{cases},
+\\qquad x^{*}_{(\\ell,j)} \\text{ places } \\hat\\sigma_j \\ell^{\\lambda_3}/\\lambda_1 \\text{ on regressor } (\\ell,j) \\text{ and } 0 \\text{ elsewhere}.``
 
-which, combined through `dummy_gram`, shrinks own lags toward a random walk
-and cross lags toward zero, tightening geometrically with the lag. Because
-the resulting prior scale is a single matrix ``\\Omega_0`` shared across
-equations (a structural requirement of the Normal-Wishart family), this
-dummy implementation cannot reproduce the original Minnesota prior's
-separate cross-equation tightness ``\\lambda_2`` — see `AsymmetricConjugatePrior`
-for a conjugate family that can. Returns `(Yd, Xd)`.
+Only the first-lag rows carry a nonzero ``y^{*}``, so the dummies are fit
+exactly by a random walk: the implied prior mean puts an identity matrix on
+the first-lag block and zeros on every higher lag and on the constant.
+Combined through `dummy_gram`, this shrinks own first lags toward one and
+every other lag coefficient toward zero, tightening with the lag as
+``\\ell^{\\lambda_3}``.
+
+A second block of ``n`` rows carries the prior on ``\\Sigma``,
+
+``y^{*}_{(\\Sigma,j)} = \\hat\\sigma_j e_j', \\qquad x^{*}_{(\\Sigma,j)} = 0,``
+
+(the third block of Bańbura, Giannone & Reichlin's eq. 5). These rows leave
+the coefficient mean untouched and contribute
+``S_0 = \\text{diag}(\\hat\\sigma_1^2,\\ldots,\\hat\\sigma_n^2)`` and ``n``
+degrees of freedom. Without them a random walk would fit every dummy row
+exactly, leaving ``S_0 = 0``.
+
+Because the resulting prior scale is a single matrix
+``\\Omega_0`` shared across equations (a structural requirement of the
+Normal-Wishart family), this dummy implementation cannot reproduce the
+original Minnesota prior's separate cross-equation tightness ``\\lambda_2``
+— see `AsymmetricConjugatePrior` for a conjugate family that can. Returns `(Yd, Xd)`.
 """
 function dummy_minnesota(
     Y::AbstractMatrix{T},
@@ -32,14 +47,18 @@ function dummy_minnesota(
     σ_ar = sqrt.(ar_residual_variances(Y, lags))
     k = n * lags + (include_constant ? 1 : 0)
     offset = include_constant ? 1 : 0
-    nrows = n * lags
+    nrows = n * lags + n
     Yd = zeros(T, nrows, n)
     Xd = zeros(T, nrows, k)
     for ℓ in 1:lags, j in 1:n
         row = (ℓ - 1) * n + j
-        weight = σ_ar[j] * T(ℓ)^λ3 / λ1
-        Yd[row, j] = weight
-        Xd[row, offset + (ℓ - 1) * n + j] = weight
+        Xd[row, offset + (ℓ - 1) * n + j] = σ_ar[j] * T(ℓ)^λ3 / λ1
+        # Random-walk prior mean: own first lag ≈ 1, every higher lag ≈ 0.
+        ℓ == 1 && (Yd[row, j] = σ_ar[j] / λ1)
+    end
+    # Σ block: y = diag(σ̂), x = 0 — the prior on the innovation covariance.
+    for j in 1:n
+        Yd[n * lags + j, j] = σ_ar[j]
     end
     return Yd, Xd
 end

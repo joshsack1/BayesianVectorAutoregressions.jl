@@ -85,8 +85,9 @@ end
         :normal_wishart;
         dummy_components = [:long_run],
     )
-    # Too few dummy rows for a proper Inverse-Wishart (ν0 = T_d - k = 5 - 5 = 0, needs > n - 1).
-    @test_throws AssertionError build_prior(
+    # The Minnesota Σ block adds n rows, so this composition is proper
+    # (ν0 = T_d - k = 7 - 5 = 2 = n > n - 1).
+    @test build_prior(
         df_p,
         end_vec_p,
         est_p,
@@ -101,7 +102,7 @@ end
             λ_dio = 1.0,
             λ_lr = 1.0,
         ),
-    )
+    ).ν0 == length(end_vec_p)
 end
 
 @testset "Marginal-likelihood optimum is not dominated by a grid neighbor" begin
