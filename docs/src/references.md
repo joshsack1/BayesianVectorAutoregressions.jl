@@ -37,6 +37,14 @@ The works cited in the docstrings and guide pages.
   The standard reference for the companion form, impulse responses (p. 260) and the
   information criteria.
 
+- **Johansen, S.** (1988). "Statistical Analysis of Cointegration Vectors." *Journal of
+  Economic Dynamics and Control*, 12(2–3), 231–254.
+  The reduced-rank cointegration test — `johansen_trace_test`.
+
+- **Johansen, S.** (1991). "Estimation and Hypothesis Testing of Cointegration Vectors in
+  Gaussian Vector Autoregressive Models." *Econometrica*, 59(6), 1551–1580.
+  The trace and maximum-eigenvalue statistics with deterministic terms — `johansen_trace_test`.
+
 - **Kadiyala, K. R., & Karlsson, S.** (1997). "Numerical Methods for Estimation and Inference in
   Bayesian VAR-Models." *Journal of Applied Econometrics*, 12(2), 99–132.
   The Normal-Wishart-compatible form of the Minnesota prior — `normal_wishart_prior`.
@@ -49,6 +57,11 @@ The works cited in the docstrings and guide pages.
 - **Litterman, R. B.** (1986). "Forecasting with Bayesian Vector Autoregressions — Five Years of
   Experience." *Journal of Business & Economic Statistics*, 4(1), 25–38.
   The original Minnesota prior — `minnesota_prior`.
+
+- **MacKinnon, J. G., Haug, A. A., & Michelis, L.** (1999). "Numerical Distribution Functions
+  of Likelihood Ratio Tests for Cointegration." *Journal of Applied Econometrics*, 14(5),
+  563–577.
+  The critical values reported by `johansen_trace_test`.
 
 - **Rubio-Ramírez, J. F., Waggoner, D. F., & Zha, T.** (2010). "Structural Vector
   Autoregressions: Theory of Identification and Algorithms for Inference." *Review of Economic

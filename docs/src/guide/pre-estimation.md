@@ -57,17 +57,35 @@ p-values should reflect.
 
 ## Cointegration
 
-[`johansen_trace_test`](@ref) returns the trace statistics and eigenvalues as a plain tuple.
-Compare the statistics against the usual Johansen critical values (they depend on the
-deterministic specification and are not tabulated here).
+[`johansen_trace_test`](@ref) fits the vector error-correction form of a VAR with `p` lags in
+levels and returns a [`JohansenResult`](@ref). It prints as a table: one row per null hypothesis
+``H_0: \text{rank} \le r``, with the trace and maximum-eigenvalue statistics next to their 5%
+critical values (MacKinnon, Haug & Michelis 1999).
 
 ```@example pre
-trace_stats, eigenvals = johansen_trace_test(df, end_vars, 2)
-(trace_stats = round.(trace_stats, digits = 3), eigenvals = round.(eigenvals, digits = 4))
+jres = johansen_trace_test(df, end_vars, 2)
 ```
 
-Element `r` of `trace_stats` tests the null of at most `r` cointegrating relations against the
-alternative of more.
+Read the table from the top and stop at the first row whose statistic falls below its critical
+value; that ``r`` is the estimated number of cointegrating relations. The full 90/95/99%
+critical values are in `jres.trace_cv` and `jres.max_eig_cv`. The statistics are scaled by the
+effective sample `jres.T_eff` ``= T - p``, and `include_constant = true` (the default) puts an
+unrestricted constant in the error-correction model.
+
+Here `ffr` is stationary by construction, so the true rank is 1: the "cointegrating" vector simply
+picks out `ffr` itself. The tests use asymptotic critical values, and in samples this short (150
+observations) they tend to over-reject, so treat a marginal rejection with caution.
+
+The estimated cointegrating vectors are the leading columns of `jres.β`, normalized so that
+``\hat\beta' S_{11} \hat\beta = I``. Rescale a column to read it as a relation:
+
+```@example pre
+β1 = jres.β[:, 1]
+round.(β1 ./ β1[3], digits = 3)   # normalized on ffr
+```
+
+Under rank ``r``, `jres.β[:, 1:r]` is the natural `H` for the long-run dummy prior
+(`dummy_components = [:long_run]`, see the priors guide).
 
 ## Lag selection
 

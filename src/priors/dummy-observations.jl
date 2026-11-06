@@ -153,7 +153,7 @@ x^{*}(\\ell,\\cdot) = \\dfrac{h'\\bar y}{\\lambda_{lr}}\\,h \\text{ for every la
 
 where ``\\bar y`` is the average of the first `lags` observations. Passing
 `H = I(n)` reproduces `dummy_sum_of_coefficients` exactly; passing a
-cointegrating vector (e.g. an eigenvector from `johansen_trace_test`) encodes
+cointegrating vector (e.g. a column of `β` from `johansen_trace_test`) encodes
 that particular long-run relationship instead of treating every variable as
 an independent random walk. Smaller ``\\lambda_{lr}`` imposes the restriction
 more strongly. Returns `(Yd, Xd)`.

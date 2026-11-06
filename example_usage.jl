@@ -19,7 +19,7 @@ end_vars = [:y1, :y2, :y3]
 #%%
 println("Testing ADF Tests:")
 println("==================")
-adf_results = adf_tests(df, end_vars)#=for (i, var) in enumerate(end_vars)=##=    println("Variable: $var")=##=    for (j, test) in enumerate(adf_results[i])=##=        test_types = ["No intercept/trend", "Constant", "Constant + trend"]=##=        println("  $(test_types[j]): p-value = $(pvalue(test))")=##=    end=##=    println()=##=end=#
+adf_results = adf_tests(df, end_vars) #=for (i, var) in enumerate(end_vars)=# #=    println("Variable: $var")=# #=    for (j, test) in enumerate(adf_results[i])=# #=        test_types = ["No intercept/trend", "Constant", "Constant + trend"]=# #=        println("  $(test_types[j]): p-value = $(pvalue(test))")=# #=    end=# #=    println()=# #=end=#
 #%%
 # This needs to be corrected
 
@@ -33,9 +33,10 @@ adf_results = adf_tests(df, end_vars)#=for (i, var) in enumerate(end_vars)=##=  
 
 println("Testing Johansen Trace Test:")
 println("============================")
-trace_stats, eigenvals = johansen_trace_test(df, end_vars, 2)
-println("Trace Statistics: $trace_stats")
-println("Eigenvalues: $eigenvals")
+jres = johansen_trace_test(df, end_vars, 2)
+display(jres)
+println()
+println("Leading cointegrating vector: $(jres.β[:, 1])")
 #%%
 println("Testing Frequentist VAR Estimation, Priors, and Bayesian Estimation:")
 println("======================================================================")
