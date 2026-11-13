@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - "1.12" # the floor declared in Project.toml
+          - "1.13" # the floor declared in Project.toml
           - "1" # latest stable
     steps:
       - uses: actions/checkout@v4
